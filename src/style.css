@@ -1,0 +1,12 @@
+.canvasBox {
+    position: absolute;
+}
+.canvasPanel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+}
+.showPanel {
+    visibility: initial;
+}

@@ -44,14 +44,18 @@ class App extends React.Component {
             showIndex
         });
     };
+    changeLayer = () => {
+        this.apngcom.changeLayer(1);
+    };
     render() {
         const { imgList, showIndex } = this.state;
         return (
             <div>
                 <div className="control-box">
                     <Easyfa
+                        style={{ top: '50px' }}
                         ref={com => (this.apngcom = com)}
-                        src={imgList[showIndex]}
+                        src={imgList}
                         rate={1}
                         autoPlay={false}
                     />
@@ -62,6 +66,7 @@ class App extends React.Component {
                         <button onClick={this.apngStop}>stop</button>
                         <button onClick={this.apngEndStop}>end stop</button>
                         <button onClick={this.changeImg}>change</button>
+                        <button onClick={this.changeLayer}>change layer</button>
                     </div>
                 </div>
             </div>
