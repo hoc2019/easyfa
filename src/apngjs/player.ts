@@ -4,6 +4,7 @@ import { APNG, Frame } from './structs';
 export default class extends EventEmitter {
     context: CanvasRenderingContext2D;
     playbackRate = 1.0;
+    _delayStop: boolean = false;
     _apng: APNG;
     _prevFrame: Frame;
     _prevFrameData: ImageData;
@@ -113,15 +114,24 @@ export default class extends EventEmitter {
     }
 
     play() {
-        this.emit('play');
+        this.playFrame();
+    }
 
-        if (this._ended) {
+    one() {
+        this.playFrame(true);
+    }
+
+    playFrame(playOnce: boolean = false) {
+        this.emit('play');
+        this._delayStop = false;
+        if (playOnce || this._ended) {
             this.stop();
         }
         this._paused = false;
         let performance = this.hasPerformance ? window.performance : Date; // supports ios8 Safari
         let nextRenderTime =
             performance.now() + this.currentFrame.delay / this.playbackRate;
+        const length = this._apng.frames.length || 0;
         const tick = (now: number) => {
             const _now = this.hasPerformance ? now : Date.now(); // supports ios8 Safari
             if (this._ended || this._paused) {
@@ -136,6 +146,15 @@ export default class extends EventEmitter {
                     this._numPlays++;
                 }
                 do {
+                    if (
+                        this._ended ||
+                        this._currentFrameNumber === length - 1
+                    ) {
+                        if (playOnce || this._delayStop) {
+                            this.stop(true);
+                            return;
+                        }
+                    }
                     this.renderNextFrame();
                     nextRenderTime +=
                         this.currentFrame.delay / this.playbackRate;
@@ -153,14 +172,19 @@ export default class extends EventEmitter {
         }
     }
 
-    stop() {
+    stop(stopEnd: boolean = false) {
         this.emit('stop');
         this._numPlays = 0;
         this._ended = false;
         this._paused = true;
-        // render first frame
-        this._currentFrameNumber = -1;
-        this.context.clearRect(0, 0, this._apng.width, this._apng.height);
-        this.renderNextFrame();
+        if (!stopEnd) {
+            //默认停止播放回到第一帧
+            this._currentFrameNumber = -1;
+            this.context.clearRect(0, 0, this._apng.width, this._apng.height);
+            this.renderNextFrame();
+        }
+    }
+    end() {
+        this._delayStop = true;
     }
 }

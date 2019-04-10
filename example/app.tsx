@@ -18,6 +18,9 @@ class App extends React.Component {
     apngStop = () => {
         this.apngcom.stop();
     };
+    apngEndStop = () => {
+        this.apngcom.end();
+    };
     render() {
         return (
             <div>
@@ -25,14 +28,15 @@ class App extends React.Component {
                     <Easyfa
                         ref={com => (this.apngcom = com)}
                         src={apngPic}
-                        autoPlay={true}
+                        rate={1}
+                        autoPlay={false}
                     />
-                    ,
                     <div className="btn-box">
                         <button onClick={this.apngPlay}>play</button>
                         <button onClick={this.apngPlayOne}>play once</button>
                         <button onClick={this.apngPause}>pause</button>
                         <button onClick={this.apngStop}>stop</button>
+                        <button onClick={this.apngEndStop}>end stop</button>
                     </div>
                 </div>
             </div>

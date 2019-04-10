@@ -19,11 +19,15 @@ export interface EasyfaProps {
     src: string;
     rate?: number;
     autoPlay?: boolean;
+    style?: {};
+    className?: '';
 }
 export interface EasyfaState {
     src: string;
     rate: number;
     autoPlay: boolean;
+    style?: {};
+    className?: '';
 }
 
 class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
@@ -36,11 +40,19 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     speed: number = 1000 / 24;
     constructor(props: EasyfaProps) {
         super(props);
-        const { src = '', rate = 1.0, autoPlay = false } = props;
+        const {
+            src = '',
+            rate = 1.0,
+            autoPlay = false,
+            style = {},
+            className = ''
+        } = props;
         this.state = {
             src,
             rate,
-            autoPlay
+            autoPlay,
+            style,
+            className
         };
         this.isPlay = false;
         this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
@@ -49,17 +61,24 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.getImgData();
     }
     reset = (nextProps: EasyfaProps) => {
-        const { src = '', rate = 1.0, autoPlay = false } = nextProps;
+        const {
+            src = '',
+            rate = 1.0,
+            autoPlay = false,
+            style = {},
+            className = ''
+        } = nextProps;
         this.stop();
         this.apng = null;
         this.player = null;
-        this.timer = [];
         this.isPlay = false;
         this.setState(
             {
                 src,
                 rate,
-                autoPlay
+                autoPlay,
+                style,
+                className
             },
             () => {
                 this.getImgData();
@@ -75,44 +94,18 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     pause = () => {
         if (!this.player) return;
         this.player.pause();
-        this.resetPlayState();
         this.isPlay = false;
     };
     stop = () => {
         if (!this.player) return;
         this.player.stop();
-        this.resetPlayState();
         this.isPlay = false;
     };
     one = () => {
-        if (!this.player) return;
-        this.resetPlayState();
-        this.player.stop();
-        const length = (this.apng as APNG).frames.length || 0;
-        this.isPlay = true;
-        let performance = this.hasPerformance ? window.performance : Date; // supports ios8 Safari
-        let nextRenderTime = performance.now() + this.speed;
-        let i = 0;
-        const tick = (now: number) => {
-            const _now = this.hasPerformance ? now : Date.now(); // supports ios8 Safari
-            if (!this.isPlay || i > length - 2) {
-                this.isPlay = false;
-                return;
-            }
-            if (_now >= nextRenderTime) {
-                this.player.renderNextFrame();
-                i++;
-                nextRenderTime = performance.now() + this.speed;
-            }
-            requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
+        this.player.one();
     };
-    resetPlayState = () => {
-        if (this.timer.length > 0) {
-            this.timer.forEach(item => clearTimeout(item));
-            this.timer = [];
-        }
+    end = () => {
+        this.player.end();
     };
     getImgData = async () => {
         const { rate, src, autoPlay } = this.state;
@@ -120,15 +113,13 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.apng = parseAPNG(data);
         //错误检测
         if (this.apng instanceof Error) {
-            // handle error
             console.log(this.apng);
+            // handle error
             return;
         }
-        //创建图片canvas
-        // await this.apng.createImages();
+        //创建canvas播放器
         this.canvas.width = this.apng.width;
         this.canvas.height = this.apng.height;
-        //创建canvas播放器
         const p = await this.apng.getPlayer(this.canvas.getContext('2d'));
         this.player = p;
         this.player.playbackRate = rate;
@@ -152,7 +143,14 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         }
     }
     render() {
-        return <canvas ref={dom => (this.canvas = dom)} {...this.props} />;
+        const { style, className } = this.state;
+        return (
+            <canvas
+                ref={dom => (this.canvas = dom)}
+                style={style}
+                className={className}
+            />
+        );
     }
 }
 

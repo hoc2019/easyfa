@@ -18,7 +18,6 @@ export class APNG {
      * @return {Promise.<*>}
      */
     createImages() {
-        console.log(this.frames);
         return Promise.all(this.frames.map(f => f.createImage()));
     }
 
