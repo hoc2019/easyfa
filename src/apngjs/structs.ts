@@ -18,6 +18,7 @@ export class APNG {
      * @return {Promise.<*>}
      */
     createImages() {
+        console.log(this.frames);
         return Promise.all(this.frames.map(f => f.createImage()));
     }
 
@@ -46,9 +47,7 @@ export class Frame {
     disposeOp = 0;
     blendOp = 0;
     dataParts: Uint8Array[];
-    /** @type {Blob} */
     imageData: Blob = null;
-    /** @type {HTMLImageElement} */
     imageElement: HTMLImageElement = null;
 
     createImage() {

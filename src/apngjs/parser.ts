@@ -30,8 +30,6 @@ const PNGSignature = new Uint8Array([
  */
 export default function parseAPNG(buffer: ArrayBuffer): APNG | Error {
     const bytes = new Uint8Array(buffer);
-    console.log(buffer);
-    console.log(bytes);
     if (
         Array.prototype.some.call(
             PNGSignature,
@@ -54,7 +52,6 @@ export default function parseAPNG(buffer: ArrayBuffer): APNG | Error {
         frame: Frame = null,
         frameNumber = 0,
         apng = new APNG();
-
     eachChunk(bytes, (type, bytes, off, length) => {
         const dv = new DataView(bytes.buffer);
         switch (type) {

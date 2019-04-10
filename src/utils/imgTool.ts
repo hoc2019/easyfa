@@ -9,7 +9,6 @@ export function getImgBuffer(url: string): Promise<ArrayBuffer> {
                 (xhr.status === 200 || xhr.status === 304)
             ) {
                 resolve(this.response);
-                console.log(this.response);
             } else {
                 reject(new Error('图片获取失败'));
             }

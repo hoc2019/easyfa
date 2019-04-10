@@ -37,7 +37,6 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     constructor(props: EasyfaProps) {
         super(props);
         const { src = '', rate = 1.0, autoPlay = false } = props;
-        console.log(props);
         this.state = {
             src,
             rate,
@@ -117,7 +116,6 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     };
     getImgData = async () => {
         const { rate, src, autoPlay } = this.state;
-        console.log('---------', src);
         const data = await getImgBuffer(src);
         this.apng = parseAPNG(data);
         //错误检测
@@ -127,12 +125,11 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             return;
         }
         //创建图片canvas
-        await this.apng.createImages();
+        // await this.apng.createImages();
         this.canvas.width = this.apng.width;
         this.canvas.height = this.apng.height;
         //创建canvas播放器
         const p = await this.apng.getPlayer(this.canvas.getContext('2d'));
-        console.log(p);
         this.player = p;
         this.player.playbackRate = rate;
         if (autoPlay) {
