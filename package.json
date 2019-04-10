@@ -1,0 +1,38 @@
+{
+    "name": "easyfa",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack-dev-server --config webpack.dev.config.js --hot --inline",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sl2782087/easyfa.git"
+    },
+    "keywords": [],
+    "author": "wangzy",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/sl2782087/easyfa/issues"
+    },
+    "homepage": "https://github.com/sl2782087/easyfa#readme",
+    "devDependencies": {
+        "@types/react": "^16.8.13",
+        "@types/react-dom": "^16.8.3",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "@types/events": "^3.0.0",
+        "awesome-typescript-loader": "^5.2.1",
+        "css-loader": "^2.1.1",
+        "file-loader": "^3.0.1",
+        "source-map-loader": "^0.2.4",
+        "style-loader": "^0.23.1",
+        "typescript": "^3.4.2",
+        "url-loader": "^1.1.2",
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.3.0",
+        "webpack-dev-server": "^3.3.0"
+    }
+}
