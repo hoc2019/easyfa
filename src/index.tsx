@@ -15,14 +15,14 @@ import Player from './apngjs/player';
  * @extends React
  */
 
-export interface EasyfaProps {
+interface EasyfaProps {
     src: string;
     rate?: number;
     autoPlay?: boolean;
     style?: {};
     className?: '';
 }
-export interface EasyfaState {
+interface EasyfaState {
     src: string;
     rate: number;
     autoPlay: boolean;
@@ -54,7 +54,6 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             style,
             className
         };
-        this.isPlay = false;
         this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     }
     componentDidMount() {
