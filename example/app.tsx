@@ -5,10 +5,10 @@ import Easyfa from '../src/index';
 import apngPic1 from './apic1.png';
 import apngPic2 from './apic2.png';
 
-const imgList = [apngPic1, apngPic2];
+const imgList = [[apngPic1, apngPic2], [apngPic2, apngPic1]];
 
 interface AppState {
-    imgList: string[];
+    imgList: any[];
     showIndex: number;
 }
 
@@ -35,7 +35,7 @@ class App extends React.Component {
     };
     changeImg = () => {
         let { showIndex, imgList } = this.state;
-        if (showIndex >= imgList.length - 1) {
+        if (showIndex >= imgList[showIndex].length - 1) {
             showIndex = 0;
         } else {
             showIndex += 1;
@@ -55,7 +55,7 @@ class App extends React.Component {
                     <Easyfa
                         style={{ top: '50px' }}
                         ref={com => (this.apngcom = com)}
-                        src={imgList}
+                        src={imgList[showIndex]}
                         rate={1}
                         autoPlay={false}
                     />

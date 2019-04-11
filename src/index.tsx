@@ -4,7 +4,7 @@ import { getImgBuffer } from './utils/imgTool';
 import { APNG } from './apngjs/structs';
 import Player from './apngjs/player';
 import easyfaStyle from './style.css';
-import { number } from 'prop-types';
+
 
 const { canvasBox, canvasPanel, showPanel } = easyfaStyle;
 
@@ -33,6 +33,7 @@ interface EasyfaState {
     style?: {};
     className?: '';
     showLayer: number;
+    loadDone: boolean;
 }
 
 class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
@@ -42,11 +43,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     canvasList: HTMLCanvasElement[] = [];
     player: Player = null;
     playerList: Player[] = [];
-    timer: number[] = [];
     isPlay: boolean = false;
     hasPerformance: boolean = typeof performance !== 'undefined';
     speed: number = 1000 / 24;
-    // showLayer: number = 0;
     constructor(props: EasyfaProps) {
         super(props);
         const {
@@ -62,7 +61,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             autoPlay,
             style,
             className,
-            showLayer: 0
+            showLayer: 0,
+            loadDone: false
         };
         this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     }
@@ -78,7 +78,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             className = ''
         } = nextProps;
         this.stop();
-        this.apng = null;
+        this.apngList = [];
+        this.playerList = [];
+        this.canvasList = [];
         this.player = null;
         this.isPlay = false;
         this.setState(
@@ -87,7 +89,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                 rate,
                 autoPlay,
                 style,
-                className
+                className,
+                loadDone: false,
+                showLayer: 0
             },
             () => {
                 this.getImgData();
@@ -124,7 +128,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     };
     getImgData = () => {
         const { rate, src, autoPlay, showLayer } = this.state;
-        src.forEach(async (item, index) => {
+        const p = src.map(async (item, index) => {
             const data = await getImgBuffer(item);
             this.apngList[index] = parseAPNG(data);
             //错误检测
@@ -152,6 +156,11 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             });
             this.player = this.playerList[showLayer];
         });
+        Promise.all(p).then(() => {
+            this.setState({
+                loadDone: true
+            });
+        });
     };
     componentWillReceiveProps(nextProps: EasyfaProps) {
         if (this.state.src !== nextProps.src) {
@@ -165,7 +174,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         }
     }
     render() {
-        const { style, className, src, showLayer } = this.state;
+        const { style, className, src, showLayer, loadDone } = this.state;
         return (
             <div className={canvasBox}>
                 {src.map((item, index) => (
@@ -174,7 +183,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                         ref={dom => (this.canvasList[index] = dom)}
                         style={style}
                         className={`${
-                            index === showLayer ? showPanel : ''
+                            index === showLayer && loadDone ? showPanel : ''
                         } ${canvasPanel} ${className}`}
                     />
                 ))}
