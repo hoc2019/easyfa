@@ -58,8 +58,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             style = {},
             className = ''
         } = props;
+        const srcList = typeof src === 'string' ? [src] : src;
         this.state = {
-            src,
+            src: srcList,
             rate,
             autoPlay,
             style,
@@ -80,6 +81,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             style = {},
             className = ''
         } = nextProps;
+        const srcList = typeof src === 'string' ? [src] : src;
         this.stop();
         this.apngList = [];
         this.playerList = [];
@@ -88,7 +90,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.isPlay = false;
         this.setState(
             {
-                src,
+                src: srcList,
                 rate,
                 autoPlay,
                 style,

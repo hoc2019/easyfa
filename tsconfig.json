@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "outDir": "./lib/",
         "sourceMap": true,
         "noImplicitAny": true,
         "target": "es6",
@@ -10,5 +9,5 @@
         "moduleResolution": "node",
         "lib": ["dom", "es7"]
     },
-    // "exclude": ["config", "lib", "node_modules"]
+    "exclude": ["config", "lib", "node_modules"]
 }

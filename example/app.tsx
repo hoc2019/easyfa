@@ -46,7 +46,6 @@ class App extends React.Component {
         } else {
             showIndex += 1;
         }
-        console.log(showIndex);
         this.setState({
             showIndex
         });
@@ -79,7 +78,7 @@ class App extends React.Component {
                 <div className="control-box">
                     <Easyfa
                         style={{ top: '50px' }}
-                        ref={com => (this.apngcom = com)}
+                        ref={(com: Easyfa) => (this.apngcom = com)}
                         src={imgList[showIndex]}
                         rate={1}
                         onLoad={this.handleLoad}
