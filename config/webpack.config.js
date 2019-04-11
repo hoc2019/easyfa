@@ -1,11 +1,12 @@
 const path = require('path');
 
 module.exports = {
-    mode: 'production',
+    mode: 'development',
     entry: './src/index.tsx',
     output: {
         path: path.resolve(__dirname, '../lib'),
-        filename: 'easyfa.js'
+        filename: 'easyfa.js',
+        libraryTarget: 'umd'
     },
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
