@@ -12,6 +12,7 @@ export default class extends EventEmitter {
     _ended = false;
     _paused = true;
     _numPlays = 0;
+    _requestTimer: number = 0;
     hasPerformance: boolean;
 
     /**
@@ -122,11 +123,11 @@ export default class extends EventEmitter {
     }
 
     playFrame(playOnce: boolean = false) {
-        this.emit('play');
-        this._delayStop = false;
         if (playOnce || this._ended) {
             this.stop();
         }
+        this.emit('play');
+        this._delayStop = false;
         this._paused = false;
         let performance = this.hasPerformance ? window.performance : Date; // supports ios8 Safari
         let nextRenderTime =
@@ -138,31 +139,22 @@ export default class extends EventEmitter {
                 return;
             }
             if (_now >= nextRenderTime) {
-                while (
-                    _now - nextRenderTime >=
-                    this._apng.playTime / this.playbackRate
-                ) {
-                    nextRenderTime += this._apng.playTime / this.playbackRate;
-                    this._numPlays++;
-                }
                 do {
                     if (
-                        this._ended ||
-                        this._currentFrameNumber === length - 1
+                        (playOnce || this._delayStop) &&
+                        (this._ended || this._currentFrameNumber === length - 1)
                     ) {
-                        if (playOnce || this._delayStop) {
-                            this.stop(true);
-                            return;
-                        }
+                        this.stop(true);
+                        return;
                     }
                     this.renderNextFrame();
                     nextRenderTime +=
                         this.currentFrame.delay / this.playbackRate;
                 } while (!this._ended && _now > nextRenderTime);
             }
-            requestAnimationFrame(tick);
+            this._requestTimer = requestAnimationFrame(tick);
         };
-        requestAnimationFrame(tick);
+        this._requestTimer = requestAnimationFrame(tick);
     }
 
     pause() {
@@ -177,6 +169,7 @@ export default class extends EventEmitter {
         this._numPlays = 0;
         this._ended = false;
         this._paused = true;
+        cancelAnimationFrame(this._requestTimer); //终止requestAnimationFrame回调
         if (!stopEnd) {
             //默认停止播放回到第一帧
             this._currentFrameNumber = -1;

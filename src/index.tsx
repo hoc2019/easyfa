@@ -5,7 +5,6 @@ import { APNG } from './apngjs/structs';
 import Player from './apngjs/player';
 import easyfaStyle from './style.css';
 
-
 const { canvasBox, canvasPanel, showPanel } = easyfaStyle;
 
 /**
