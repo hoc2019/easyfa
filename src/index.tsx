@@ -24,6 +24,9 @@ interface EasyfaProps {
     autoPlay?: boolean;
     style?: {};
     className?: '';
+    onLoad?: Function;
+    onLoopStart?: Function;
+    onLoopEnd?: Function;
 }
 interface EasyfaState {
     src: string[];
@@ -126,6 +129,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.player.end();
     };
     getImgData = () => {
+        const { onLoad, onLoopStart, onLoopEnd } = this.props;
         const { rate, src, autoPlay, showLayer } = this.state;
         const p = src.map(async (item, index) => {
             const data = await getImgBuffer(item);
@@ -153,12 +157,19 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             this.playerList[index].on('end', () => {
                 this.isPlay = false;
             });
-            this.player = this.playerList[showLayer];
+            this.playerList[index].on('loopStart', () => {
+                onLoopStart && onLoopStart();
+            });
+            this.playerList[index].on('loopEnd', () => {
+                onLoopEnd && onLoopEnd();
+            });
         });
         Promise.all(p).then(() => {
             this.setState({
                 loadDone: true
             });
+            this.player = this.playerList[showLayer];
+            onLoad && onLoad();
         });
     };
     componentWillReceiveProps(nextProps: EasyfaProps) {

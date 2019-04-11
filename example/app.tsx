@@ -47,6 +47,15 @@ class App extends React.Component {
     changeLayer = () => {
         this.apngcom.changeLayer(1);
     };
+    handleLoad = () => {
+        console.log('动图加载完成');
+    };
+    handleLoopStart = () => {
+        console.log('第一帧');
+    };
+    handleLoopEnd = () => {
+        console.log('最后一帧');
+    };
     render() {
         const { imgList, showIndex } = this.state;
         return (
@@ -57,6 +66,9 @@ class App extends React.Component {
                         ref={com => (this.apngcom = com)}
                         src={imgList[showIndex]}
                         rate={1}
+                        onLoad={this.handleLoad}
+                        onLoopStart={this.handleLoopStart}
+                        onLoopEnd={this.handleLoopEnd}
                         autoPlay={false}
                     />
                     <div className="btn-box">

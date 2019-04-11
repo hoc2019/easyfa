@@ -54,7 +54,11 @@ export default class extends EventEmitter {
     renderNextFrame() {
         this._currentFrameNumber =
             (this._currentFrameNumber + 1) % this._apng.frames.length;
+        !this._paused &&
+            this._currentFrameNumber === 0 &&
+            this.emit('loopStart'); //动画第一帧消息
         if (this._currentFrameNumber === this._apng.frames.length - 1) {
+            this.emit('loopEnd'); //动画最后一帧消息
             this._numPlays++;
             if (
                 this._apng.numPlays !== 0 &&
@@ -126,6 +130,9 @@ export default class extends EventEmitter {
         if (playOnce || this._ended) {
             this.stop();
         }
+        this._numPlays === 0 &&
+            this._currentFrameNumber === 0 &&
+            this.emit('loopStart'); //动画第一帧消息
         this.emit('play');
         this._delayStop = false;
         this._paused = false;
