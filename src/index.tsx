@@ -25,6 +25,7 @@ interface EasyfaProps {
     style?: {};
     className?: '';
     onLoad?: Function;
+    onEnd?: Function;
     onLoopStart?: Function;
     onLoopEnd?: Function;
 }
@@ -101,16 +102,19 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         );
     };
     changeLayer = (layerIndex: number) => {
+        if (!this.playerList[layerIndex]) return;
         this.setState({
             showLayer: layerIndex
         });
         this.player = this.playerList[layerIndex];
     };
-    play = () => {
+    play = (round?: number) => {
         if (!this.player) return;
-        if (!this.player.paused) return;
-        this.player.play();
+        this.player.play(round);
         this.isPlay = true;
+    };
+    one = () => {
+        this.play(1);
     };
     pause = () => {
         if (!this.player) return;
@@ -122,14 +126,11 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.player.stop();
         this.isPlay = false;
     };
-    one = () => {
-        this.player.one();
-    };
     end = () => {
         this.player.end();
     };
     getImgData = () => {
-        const { onLoad, onLoopStart, onLoopEnd } = this.props;
+        const { onLoad, onLoopStart, onLoopEnd, onEnd } = this.props;
         const { rate, src, autoPlay, showLayer } = this.state;
         const p = src.map(async (item, index) => {
             const data = await getImgBuffer(item);
@@ -152,9 +153,11 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             this.playerList[index].playbackRate = rate;
             if (autoPlay) {
                 this.playerList[index].play();
-                this.isPlay = true;
             }
-            this.playerList[index].on('end', () => {
+            this.playerList[index].on('play', () => {
+                this.isPlay = true;
+            });
+            this.playerList[index].on('stop', () => {
                 this.isPlay = false;
             });
             this.playerList[index].on('loopStart', () => {
@@ -162,6 +165,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             });
             this.playerList[index].on('loopEnd', () => {
                 onLoopEnd && onLoopEnd();
+            });
+            this.playerList[index].on('end', () => {
+                onEnd && onEnd();
             });
         });
         Promise.all(p).then(() => {

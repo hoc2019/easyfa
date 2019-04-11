@@ -5,21 +5,27 @@ import Easyfa from '../src/index';
 import apngPic1 from './apic1.png';
 import apngPic2 from './apic2.png';
 
-const imgList = [[apngPic1, apngPic2], [apngPic2, apngPic1]];
+const imgList = [[apngPic1], [apngPic2, apngPic1]];
 
 interface AppState {
     imgList: any[];
     showIndex: number;
+    roundNum: number;
 }
 
 class App extends React.Component {
     apngcom: Easyfa = null;
     state: AppState = {
         imgList,
-        showIndex: 0
+        showIndex: 0,
+        roundNum: 1
     };
     apngPlay = () => {
         this.apngcom.play();
+    };
+    apngRoundPlay = () => {
+        const { roundNum } = this.state;
+        this.apngcom.play(roundNum);
     };
     apngPlayOne = () => {
         this.apngcom.one();
@@ -35,11 +41,12 @@ class App extends React.Component {
     };
     changeImg = () => {
         let { showIndex, imgList } = this.state;
-        if (showIndex >= imgList[showIndex].length - 1) {
+        if (showIndex >= imgList.length - 1) {
             showIndex = 0;
         } else {
             showIndex += 1;
         }
+        console.log(showIndex);
         this.setState({
             showIndex
         });
@@ -51,13 +58,22 @@ class App extends React.Component {
         console.log('动图加载完成');
     };
     handleLoopStart = () => {
-        console.log('第一帧');
+        console.log('动画播放到第一帧');
     };
     handleLoopEnd = () => {
-        console.log('最后一帧');
+        console.log('动画播放到最后一帧');
+    };
+    handleEnd = () => {
+        console.log('动画结束');
+    };
+    handleChangeRoundNum = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const num = e.target.value;
+        this.setState({
+            roundNum: num
+        });
     };
     render() {
-        const { imgList, showIndex } = this.state;
+        const { imgList, showIndex, roundNum } = this.state;
         return (
             <div>
                 <div className="control-box">
@@ -67,18 +83,29 @@ class App extends React.Component {
                         src={imgList[showIndex]}
                         rate={1}
                         onLoad={this.handleLoad}
+                        onEnd={this.handleEnd}
                         onLoopStart={this.handleLoopStart}
                         onLoopEnd={this.handleLoopEnd}
                         autoPlay={false}
                     />
                     <div className="btn-box">
-                        <button onClick={this.apngPlay}>play</button>
-                        <button onClick={this.apngPlayOne}>play once</button>
-                        <button onClick={this.apngPause}>pause</button>
-                        <button onClick={this.apngStop}>stop</button>
-                        <button onClick={this.apngEndStop}>end stop</button>
-                        <button onClick={this.changeImg}>change</button>
-                        <button onClick={this.changeLayer}>change layer</button>
+                        <button onClick={this.apngPlay}>循环播放</button>
+                        <button onClick={this.apngPlayOne}>播放一次</button>
+                        <button onClick={this.apngPause}>暂停</button>
+                        <button onClick={this.apngStop}>立即停止</button>
+                        <button onClick={this.apngEndStop}>播完停止</button>
+                        <button onClick={this.changeImg}>改变图片</button>
+                        <button onClick={this.changeLayer}>改变图层</button>
+                        <button onClick={this.apngRoundPlay}>
+                            播放任意次数（{roundNum}次）
+                        </button>
+                        <label htmlFor="roundInput" />
+                        <input
+                            id="roundInput"
+                            type="number"
+                            onChange={this.handleChangeRoundNum}
+                            value={roundNum}
+                        />
                     </div>
                 </div>
             </div>

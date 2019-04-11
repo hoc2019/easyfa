@@ -9,10 +9,11 @@ export default class extends EventEmitter {
     _prevFrame: Frame;
     _prevFrameData: ImageData;
     _currentFrameNumber = 0;
-    _ended = false;
-    _paused = true;
-    _numPlays = 0;
-    _requestTimer: number = 0;
+    _ended = false; //结束
+    _paused = true; //暂停
+    _numPlays = 0; //真实播放次数
+    _requestTimer = 0;
+    _playRound = -1; //设定播放次数
     hasPerformance: boolean;
 
     /**
@@ -60,14 +61,15 @@ export default class extends EventEmitter {
         if (this._currentFrameNumber === this._apng.frames.length - 1) {
             this.emit('loopEnd'); //动画最后一帧消息
             this._numPlays++;
-            if (
-                this._apng.numPlays !== 0 &&
-                this._numPlays >= this._apng.numPlays
-            ) {
-                this.emit('end');
-                this._ended = true;
-                this._paused = true;
-            }
+            //根据image图片动画播放次数控制
+            // if (
+            //     this._apng.numPlays !== 0 &&
+            //     this._numPlays >= this._apng.numPlays
+            // ) {
+            //     this.emit('end');
+            //     this._ended = true;
+            //     this._paused = true;
+            // }
         }
 
         if (this._prevFrame && this._prevFrame.disposeOp == 1) {
@@ -118,22 +120,25 @@ export default class extends EventEmitter {
         return this._ended;
     }
 
-    play() {
-        this.playFrame();
+    play(round?: number) {
+        if (round < 1) return;
+        this.playFrame(round);
     }
 
     one() {
-        this.playFrame(true);
+        this.playFrame(1);
     }
 
-    playFrame(playOnce: boolean = false) {
-        if (playOnce || this._ended) {
+    playFrame(round = Infinity) {
+        if (!this._paused) return;
+        if (round !== this._playRound || this._ended) {
             this.stop();
         }
         this._numPlays === 0 &&
             this._currentFrameNumber === 0 &&
             this.emit('loopStart'); //动画第一帧消息
         this.emit('play');
+        this._playRound = round;
         this._delayStop = false;
         this._paused = false;
         let performance = this.hasPerformance ? window.performance : Date; // supports ios8 Safari
@@ -148,9 +153,11 @@ export default class extends EventEmitter {
             if (_now >= nextRenderTime) {
                 do {
                     if (
-                        (playOnce || this._delayStop) &&
+                        (this._numPlays >= this._playRound ||
+                            this._delayStop) &&
                         (this._ended || this._currentFrameNumber === length - 1)
                     ) {
+                        this.emit('end'); //非手动播放结束
                         this.stop(true);
                         return;
                     }
