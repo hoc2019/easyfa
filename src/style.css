@@ -1,5 +1,6 @@
 .canvasBox {
-    position: absolute;
+    position: relative;
+    display: inline-block;
 }
 .canvasPanel {
     position: absolute;
@@ -8,5 +9,6 @@
     visibility: hidden;
 }
 .showPanel {
+    position: relative;
     visibility: initial;
 }

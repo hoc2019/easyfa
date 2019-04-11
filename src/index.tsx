@@ -194,15 +194,14 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     render() {
         const { style, className, src, showLayer, loadDone } = this.state;
         return (
-            <div className={canvasBox}>
+            <div className={`${canvasBox} ${className}`} style={style}>
                 {src.map((item, index) => (
                     <canvas
                         key={index}
                         ref={dom => (this.canvasList[index] = dom)}
-                        style={style}
                         className={`${
                             index === showLayer && loadDone ? showPanel : ''
-                        } ${canvasPanel} ${className}`}
+                        } ${canvasPanel} `}
                     />
                 ))}
             </div>
