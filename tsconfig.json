@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "./lib/",
         "sourceMap": true,
         "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
+        "noUnusedLocals": true,
         "esModuleInterop": true,
         "jsx": "react",
-        "lib": ["dom", "es2015"]
+        "moduleResolution": "node",
+        "lib": ["dom", "es7"]
     },
-    "include": ["./src/**/*", "example/**/*"]
+    "exclude": ["config", "lib", "node_modules"]
 }
