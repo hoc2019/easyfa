@@ -19,9 +19,9 @@
 ### 使用方式
 
 ```bash
-npm install react-player --save
+npm install easyfa --save
 # or
-yarn add react-player
+yarn add easyfa
 ```
 
 ```js
