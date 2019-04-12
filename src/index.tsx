@@ -3,9 +3,7 @@ import parseAPNG from './apngjs/parser';
 import { getImgBuffer } from './utils/imgTool';
 import { APNG } from './apngjs/structs';
 import Player from './apngjs/player';
-import easyfaStyle from './style.css';
-
-const { canvasBox, canvasPanel, showPanel } = easyfaStyle;
+import './style.css';
 
 /**
  * [ApngComponent description]
@@ -23,6 +21,8 @@ interface EasyfaProps {
     rate?: number;
     autoPlay?: boolean;
     style?: {};
+    canvasClassName?: '';
+    canvasStyle?: {};
     className?: '';
     onLoad?: Function;
     onEnd?: Function;
@@ -35,6 +35,8 @@ interface EasyfaState {
     autoPlay: boolean;
     style?: {};
     className?: '';
+    canvasClassName?: '';
+    canvasStyle?: {};
     showLayer: number;
     loadDone: boolean;
 }
@@ -56,7 +58,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             rate = 1.0,
             autoPlay = false,
             style = {},
-            className = ''
+            className = '',
+            canvasStyle = {},
+            canvasClassName = ''
         } = props;
         const srcList = typeof src === 'string' ? [src] : src;
         this.state = {
@@ -65,6 +69,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             autoPlay,
             style,
             className,
+            canvasStyle,
+            canvasClassName,
             showLayer: 0,
             loadDone: false
         };
@@ -79,7 +85,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             rate = 1.0,
             autoPlay = false,
             style = {},
-            className = ''
+            className = '',
+            canvasStyle = {},
+            canvasClassName = ''
         } = nextProps;
         const srcList = typeof src === 'string' ? [src] : src;
         this.stop();
@@ -95,6 +103,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                 autoPlay,
                 style,
                 className,
+                canvasStyle,
+                canvasClassName,
                 loadDone: false,
                 showLayer: 0
             },
@@ -192,16 +202,27 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         }
     }
     render() {
-        const { style, className, src, showLayer, loadDone } = this.state;
+        const {
+            style,
+            className,
+            canvasStyle,
+            canvasClassName,
+            src,
+            showLayer,
+            loadDone
+        } = this.state;
         return (
-            <div className={`${canvasBox} ${className}`} style={style}>
+            <div className={`easyfa-canvas-box ${className}`} style={style}>
                 {src.map((item, index) => (
                     <canvas
                         key={index}
                         ref={dom => (this.canvasList[index] = dom)}
-                        className={`${
-                            index === showLayer && loadDone ? showPanel : ''
-                        } ${canvasPanel} `}
+                        style={canvasStyle}
+                        className={`${canvasClassName} ${
+                            index === showLayer && loadDone
+                                ? 'easyfa-canvas-show'
+                                : ''
+                        } easyfa-canvas-panel`}
                     />
                 ))}
             </div>

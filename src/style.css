@@ -1,8 +1,8 @@
-.canvasBox {
+.easyfa-canvas-box {
     position: relative;
     display: inline-block;
 }
-.canvasPanel {
+.easyfa-canvas  {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -10,7 +10,7 @@
     top: 0;
     visibility: hidden;
 }
-.showPanel {
+.easyfa-canvas-show {
     position: relative;
     visibility: initial;
 }
