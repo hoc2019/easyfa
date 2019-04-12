@@ -21,9 +21,9 @@ interface EasyfaProps {
     rate?: number;
     autoPlay?: boolean;
     style?: {};
+    className?: '';
     canvasClassName?: '';
     canvasStyle?: {};
-    className?: '';
     onLoad?: Function;
     onEnd?: Function;
     onLoopStart?: Function;

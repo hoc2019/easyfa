@@ -86,7 +86,7 @@ class App extends React.Component {
                         onEnd={this.handleEnd}
                         onLoopStart={this.handleLoopStart}
                         onLoopEnd={this.handleLoopEnd}
-                        autoPlay={false}
+                        autoPlay={true}
                     />
                     <div className="btn-box" style={{ marginTop: '100px ' }}>
                         <button onClick={this.apngPlay}>循环播放</button>
