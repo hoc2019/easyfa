@@ -23,11 +23,7 @@ module.exports = {
                 use: [
                     { loader: 'style-loader' },
                     {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true,
-                            localIdentName: '[hash:base64:6]'
-                        }
+                        loader: 'css-loader'
                     }
                 ]
             },

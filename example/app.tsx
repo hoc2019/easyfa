@@ -4,8 +4,9 @@ import Easyfa from '../src/index';
 
 import apngPic1 from './apic1.png';
 import apngPic2 from './apic2.png';
+import png from './png.png';
 
-const imgList = [[apngPic1], [apngPic2, apngPic1]];
+const imgList = [[png, apngPic1], apngPic1, [apngPic2, apngPic1]];
 
 interface AppState {
     imgList: any[];
@@ -87,7 +88,7 @@ class App extends React.Component {
                         onLoopEnd={this.handleLoopEnd}
                         autoPlay={false}
                     />
-                    <div className="btn-box">
+                    <div className="btn-box" style={{ marginTop: '100px ' }}>
                         <button onClick={this.apngPlay}>循环播放</button>
                         <button onClick={this.apngPlayOne}>播放一次</button>
                         <button onClick={this.apngPause}>暂停</button>

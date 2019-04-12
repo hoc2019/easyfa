@@ -1,14 +1,26 @@
 import crc32 from './crc32';
 import { APNG, Frame } from './structs';
 
+interface ApngInfo {
+    width: number;
+    height: number;
+}
+export interface ErrNotAPNG {
+    error: Error;
+    apngInfo: ApngInfo;
+}
+
 const errNotPNG = new Error('Not a PNG');
-const errNotAPNG = new Error('Not an animated PNG');
+const errNotAPNG: ErrNotAPNG = {
+    error: new Error('Not an animated PNG'),
+    apngInfo: { width: 0, height: 0 }
+};
 
 export function isNotPNG(err: Error): boolean {
     return err === errNotPNG;
 }
-export function isNotAPNG(err: Error): boolean {
-    return err === errNotAPNG;
+export function isNotAPNG(err: ErrNotAPNG): boolean {
+    return err.error === errNotAPNG.error;
 }
 
 // '\x89PNG\x0d\x0a\x1a\x0a'
@@ -26,9 +38,11 @@ const PNGSignature = new Uint8Array([
 /**
  * Parse APNG data
  * @param {ArrayBuffer} buffer
- * @return {APNG|Error}
+ * @return {APNG|Error|ErrNotAPNG}
  */
-export default function parseAPNG(buffer: ArrayBuffer): APNG | Error {
+export default function parseAPNG(
+    buffer: ArrayBuffer
+): APNG | Error | ErrNotAPNG {
     const bytes = new Uint8Array(buffer);
     if (
         Array.prototype.some.call(
@@ -39,19 +53,30 @@ export default function parseAPNG(buffer: ArrayBuffer): APNG | Error {
         return errNotPNG;
     }
 
+    let apng = new APNG();
     // fast animation test
     let isAnimated = false;
-    eachChunk(bytes, type => !(isAnimated = type === 'acTL'));
+    eachChunk(bytes, (type, bytes, off) => {
+        switch (type) {
+            case 'acTL':
+                isAnimated = true;
+                break;
+            case 'IHDR':
+                const dv = new DataView(bytes.buffer);
+                apng.width = dv.getUint32(off + 8);
+                apng.height = dv.getUint32(off + 12);
+                break;
+        }
+    });
     if (!isAnimated) {
+        errNotAPNG.apngInfo = apng;
         return errNotAPNG;
     }
-
     const preDataParts: any[] = [],
         postDataParts: any[] = [];
     let headerDataBytes: Uint8Array = null,
         frame: Frame = null,
-        frameNumber = 0,
-        apng = new APNG();
+        frameNumber = 0;
     eachChunk(bytes, (type, bytes, off, length) => {
         const dv = new DataView(bytes.buffer);
         switch (type) {
@@ -117,6 +142,7 @@ export default function parseAPNG(buffer: ArrayBuffer): APNG | Error {
     }
 
     if (apng.frames.length == 0) {
+        errNotAPNG.apngInfo = apng;
         return errNotAPNG;
     }
 

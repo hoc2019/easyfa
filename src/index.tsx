@@ -1,5 +1,5 @@
 import * as React from 'react';
-import parseAPNG from './apngjs/parser';
+import parseAPNG, { ErrNotAPNG } from './apngjs/parser';
 import { getImgBuffer } from './utils/imgTool';
 import { APNG } from './apngjs/structs';
 import Player from './apngjs/player';
@@ -43,7 +43,7 @@ interface EasyfaState {
 
 class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     apng: APNG | Error = null;
-    apngList: (APNG | Error)[] = [];
+    apngList: (APNG | Error | ErrNotAPNG)[] = [];
     canvas: HTMLCanvasElement = null;
     canvasList: HTMLCanvasElement[] = [];
     player: Player = null;
@@ -146,20 +146,32 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         const { rate, src, autoPlay, showLayer } = this.state;
         const p = src.map(async (item, index) => {
             const data = await getImgBuffer(item);
-            this.apngList[index] = parseAPNG(data);
+            const apngItem = (this.apngList[index] = parseAPNG(data));
+            const canvasItem = this.canvasList[index];
             //错误检测
-            if (this.apngList[index] instanceof Error) {
-                console.log(this.apngList[index]);
-                // handle error
+            //图片格式不支持(非png)
+            if (apngItem instanceof Error) {
+                console.log('目前不支持其他类型图片');
+                return;
+            }
+            //非动图apng
+            if ((apngItem as ErrNotAPNG).error instanceof Error) {
+                const { apngInfo } = apngItem as ErrNotAPNG;
+                canvasItem.width = apngInfo.width;
+                canvasItem.height = apngInfo.height;
+                const ctx = canvasItem.getContext('2d');
+                const imgElement = document.createElement('img');
+                imgElement.src = item;
+                imgElement.onload = function() {
+                    ctx.drawImage(imgElement, 0, 0);
+                };
                 return;
             }
             //创建canvas播放器
-            this.canvasList[index].width = (this.apngList[index] as APNG).width;
-            this.canvasList[index].height = (this.apngList[
-                index
-            ] as APNG).height;
-            const p = await (this.apngList[index] as APNG).getPlayer(
-                this.canvasList[index].getContext('2d')
+            canvasItem.width = (apngItem as APNG).width;
+            canvasItem.height = (apngItem as APNG).height;
+            const p = await (apngItem as APNG).getPlayer(
+                canvasItem.getContext('2d')
             );
             this.playerList[index] = p;
             this.playerList[index].playbackRate = rate;
@@ -222,7 +234,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                             index === showLayer && loadDone
                                 ? 'easyfa-canvas-show'
                                 : ''
-                        } easyfa-canvas-panel`}
+                        } easyfa-canvas`}
                     />
                 ))}
             </div>
