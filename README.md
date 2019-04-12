@@ -39,6 +39,8 @@ class App extends Component {
 | `canvasClassName` | 内层canvas样式类名                                                                                                             | `string`        |
 | `autoPlay`        | 图片加载后是否自动播放（循环播放），默认false                                                                                  | `boolean`       |
 
+> PS.改变src会解析加载动图并刷新，此方法切换图片会出现闪烁，可通过src传入数组，并通changeLayer方法切换指定图层来实现。
+
 ### 回调属性
 
  | 属性        | 描述                                       |
@@ -50,10 +52,13 @@ class App extends Component {
 
 ### 实例方法
 
-通过[`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) 拿到Easyfa组件实例调用   
- | 属性        | 描述                                       |
- | ----------- | ------------------------------------------ |
- | onLoad      | 图片加载解析成功动画可以播放时回调         |
- | onEnd       | 动画播放结束时回调                         |
- | onLoopStart | 循环播放动画每次动画播放开始第一帧时会调   |
- | onLoopEnd   | 循环播放动画每次动画播放结束最后一帧时会调 |
+通过[`ref`](https://facebook.github.io/react/docs/refs-and-the-dom.html) 拿到Easyfa组件实例调用
+
+ | 方法 | 描述 | 参数 |
+ | --- | ---- | ---- |
+ | play  | 播放动画 | 可传入一个数字控制播放次数，<br>不传为循环播放 |
+ | one   | 播放一次动画，相当于play(1) |-|
+ | pause |暂停动画（停在当前帧）|-|
+ | stop  |停止动画（重回第一帧）|-|
+ | end   |此次循环播完后停止（停在最后一帧）|-|
+ | changeLayer   |当src传入为数组时，此方法可显示指定图层|传入一个数字，显示数组中对应的<br>图层（对应数组坐标），无加载<br>闪烁。|
