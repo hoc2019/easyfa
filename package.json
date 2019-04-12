@@ -18,7 +18,7 @@
     "bugs": {
         "url": "https://github.com/sl2782087/easyfa/issues"
     },
-    "homepage": "https://github.com/sl2782087/easyfa#readme?v=1",
+    "homepage": "https://github.com/sl2782087/easyfa#readme?v=2",
     "peerDependencies": {
         "react": ">=16.0.0",
         "react-dom": ">=16.0.0"
