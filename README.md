@@ -4,6 +4,17 @@
 <p align='center'>
   简单的帧动画解决方案，将apng动图解析通过canvas播放，并实现事件和控制的react组件（apng动图解析基于<a href='https://github.com/davidmz/apng-js'>apng-js</a>修改）
 </p>
+<p align='center'>
+  <a href='https://www.npmjs.com/package/easyfa'>
+    <img src='https://img.shields.io/npm/v/easyfa.svg' alt='Latest npm version'>
+  </a>
+  <a href='https://opensource.org/licenses/mit-license.php'>
+    <img src='https://badges.frapsoft.com/os/mit/mit.svg?v=103' alt='MIT License'>
+  </a>
+   <a href='https://github.com/ellerbrock/typescript-badges/'>
+    <img src='https://badges.frapsoft.com/typescript/code/typescript.svg?v=101' alt='Typescript'>
+  </a>
+</p>
 
 ### 使用方式
 
