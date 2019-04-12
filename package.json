@@ -19,15 +19,19 @@
         "url": "https://github.com/sl2782087/easyfa/issues"
     },
     "homepage": "https://github.com/sl2782087/easyfa#readme",
+    "peerDependencies": {
+        "react": ">=16.0.0",
+        "react-dom": ">=16.0.0"
+    },
     "devDependencies": {
+        "@types/events": "^3.0.0",
         "@types/react": "^16.8.13",
         "@types/react-dom": "^16.8.3",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6",
-        "@types/events": "^3.0.0",
         "awesome-typescript-loader": "^5.2.1",
         "css-loader": "^2.1.1",
         "file-loader": "^3.0.1",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
         "source-map-loader": "^0.2.4",
         "style-loader": "^0.23.1",
         "typescript": "^3.4.2",
