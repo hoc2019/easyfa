@@ -2,7 +2,7 @@
     "name": "easyfa",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "lib/easyfa.js",
     "scripts": {
         "start": "webpack-dev-server --config config/webpack.dev.config.js --hot --inline",
         "build": "webpack --config config/webpack.config.js",
