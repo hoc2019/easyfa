@@ -1,6 +1,6 @@
 {
     "name": "easyfa",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "",
     "main": "lib/easyfa.js",
     "scripts": {
