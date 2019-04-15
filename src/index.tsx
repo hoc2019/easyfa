@@ -203,7 +203,12 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         });
     };
     componentWillReceiveProps(nextProps: EasyfaProps) {
-        if (this.state.src !== nextProps.src) {
+        const nextSrc = nextProps.src;
+        const parsePropsSrc = Array.isArray(nextSrc)
+            ? nextSrc.join('')
+            : nextSrc;
+        const parseStateSrc = this.state.src.join('');
+        if (parseStateSrc !== parsePropsSrc) {
             this.reset(nextProps);
         }
     }
