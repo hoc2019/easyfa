@@ -3,10 +3,10 @@ import * as ReactDOM from 'react-dom';
 import Easyfa from '../src/index';
 
 import apngPic1 from './apic1.png';
-import apngPic2 from './apic2.png';
+// import apngPic2 from './apic2.png';
 import png from './png.png';
 
-const imgList = [[png, apngPic1], apngPic1, [apngPic2, apngPic1]];
+const imgList = [[apngPic1, png], [png, apngPic1]];
 
 interface AppState {
     imgList: any[];

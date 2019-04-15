@@ -114,7 +114,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         );
     };
     changeLayer = (layerIndex: number) => {
-        if (!this.playerList[layerIndex]) return;
+        if (!this.canvasList[layerIndex]) return;
         this.setState({
             showLayer: layerIndex
         });
@@ -139,6 +139,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.isPlay = false;
     };
     end = () => {
+        if (!this.player) return;
         this.player.end();
     };
     getImgData = () => {
