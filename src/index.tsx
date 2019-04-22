@@ -115,6 +115,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     };
     changeLayer = (layerIndex: number) => {
         if (!this.canvasList[layerIndex]) return;
+        this.stop();
         this.setState({
             showLayer: layerIndex
         });

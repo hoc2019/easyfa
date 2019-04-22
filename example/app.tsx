@@ -9,6 +9,7 @@ import png from './png.png';
 const imgList = [[apngPic1, png], [png, apngPic1]];
 
 interface AppState {
+    layerIndex: 0;
     imgList: any[];
     showIndex: number;
     roundNum: number;
@@ -17,6 +18,7 @@ interface AppState {
 class App extends React.Component {
     apngcom: Easyfa = null;
     state: AppState = {
+        layerIndex: 0,
         imgList,
         showIndex: 0,
         roundNum: 1
@@ -52,7 +54,16 @@ class App extends React.Component {
         });
     };
     changeLayer = () => {
-        this.apngcom.changeLayer(1);
+        const { layerIndex } = this.state;
+        const index = Math.abs(layerIndex - 1);
+        this.setState(
+            {
+                layerIndex: index
+            },
+            () => {
+                this.apngcom.changeLayer(index);
+            }
+        );
     };
     handleLoad = () => {
         console.log('动图加载完成');
