@@ -165,6 +165,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                 const imgElement = document.createElement('img');
                 imgElement.src = item;
                 imgElement.onload = function() {
+                    ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);
                     ctx.drawImage(imgElement, 0, 0);
                 };
                 return;
@@ -177,7 +178,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             );
             this.playerList[index] = p;
             this.playerList[index].playbackRate = rate;
-            if (autoPlay) {
+            if (autoPlay && index === showLayer) {
                 this.playerList[index].play();
             }
             this.playerList[index].on('play', () => {
