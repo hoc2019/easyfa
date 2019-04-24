@@ -75,7 +75,7 @@ class App extends Component {
  | changeLayer   |当src传入为数组时，此方法可显示指定图层|传入一个数字，显示数组中对应的<br>图层（对应数组坐标），无加载<br>闪烁。|
 
 ### TODO
-- [ ] demo页面
+- [x] demo页面
 - [ ] 代码注释完善
 - [ ] 单元测试
 - [ ] 展示指定帧数页面
