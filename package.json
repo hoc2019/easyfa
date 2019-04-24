@@ -11,15 +11,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/sl2782087/easyfa.git"
+        "url": "git+https://github.com/hoc2019/easyfa.git"
     },
     "keywords": [],
     "author": "wangzy",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/sl2782087/easyfa/issues"
+        "url": "https://github.com/hoc2019/easyfa/issues"
     },
-    "homepage": "https://github.com/sl2782087/easyfa#readme?v=2",
+    "homepage": "https://github.com/hoc2019/easyfa#readme?v=2",
     "peerDependencies": {
         "react": ">=16.0.0",
         "react-dom": ">=16.0.0"

@@ -2,7 +2,7 @@
   Easyfa
 </h1>
 <p align='center'>
-  简单的帧动画解决方案，将apng动图解析通过canvas播放，并实现事件和控制的react组件（apng动图解析基于<a href='https://github.com/davidmz/apng-js'>apng-js</a>修改）。 <a href="https://sl2782087.github.io/easyfa/">DEMO地址</a>
+  简单的帧动画解决方案，将apng动图解析通过canvas播放，并实现事件和控制的react组件（apng动图解析基于<a href='https://github.com/davidmz/apng-js'>apng-js</a>修改）。 <a href="https://hoc2019.github.io/easyfa/">DEMO地址</a>
 </p>
 <p align='center'>
   <a href='https://www.npmjs.com/package/easyfa'>
