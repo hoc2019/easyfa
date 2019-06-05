@@ -205,13 +205,32 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             onLoad && onLoad();
         });
     };
+    checkDiff = (nextProps: EasyfaProps) => {
+        const { style, className, canvasStyle, canvasClassName } = this.state;
+        const {
+            style: nStyle,
+            className: nClassName,
+            canvasStyle: nCanvasStyle,
+            canvasClassName: nCanvasClassName
+        } = nextProps;
+
+        return (
+            className !== nClassName ||
+            canvasClassName !== nCanvasClassName ||
+            this.jsonStringDiff(style, nStyle) ||
+            this.jsonStringDiff(canvasStyle, nCanvasStyle)
+        );
+    };
+    jsonStringDiff = (obj1: Object = {}, obj2: Object = {}) => {
+        return JSON.stringify(obj1) !== JSON.stringify(obj2);
+    };
     componentWillReceiveProps(nextProps: EasyfaProps) {
         const nextSrc = nextProps.src;
         const parsePropsSrc = Array.isArray(nextSrc)
             ? nextSrc.join('')
             : nextSrc;
         const parseStateSrc = this.state.src.join('');
-        if (parseStateSrc !== parsePropsSrc) {
+        if (parseStateSrc !== parsePropsSrc || this.checkDiff(nextProps)) {
             this.reset(nextProps);
         }
     }
