@@ -28,6 +28,7 @@ interface EasyfaProps {
     onEnd?: Function;
     onLoopStart?: Function;
     onLoopEnd?: Function;
+    [propName: string]: any;
 }
 interface EasyfaState {
     src: string[];
@@ -39,6 +40,10 @@ interface EasyfaState {
     canvasStyle?: {};
     showLayer: number;
     loadDone: boolean;
+    [stateName: string]: any;
+}
+interface PropsObj {
+    [stateName: string]: any;
 }
 
 class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
@@ -206,22 +211,28 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         });
     };
     checkDiff = (nextProps: EasyfaProps) => {
-        const { style, className, canvasStyle, canvasClassName } = this.state;
-        const {
-            style: nStyle,
-            className: nClassName,
-            canvasStyle: nCanvasStyle,
-            canvasClassName: nCanvasClassName
-        } = nextProps;
-
-        return (
-            className !== nClassName ||
-            canvasClassName !== nCanvasClassName ||
-            this.jsonStringDiff(style, nStyle) ||
-            this.jsonStringDiff(canvasStyle, nCanvasStyle)
+        const propsObj: PropsObj = {};
+        let changedState = [
+            'style',
+            'className',
+            'canvasStyle',
+            'canvasClassName'
+        ];
+        changedState = changedState.filter(
+            (key: string) =>
+                nextProps[key] &&
+                this.jsonStringDiff(nextProps[key], this.state[key])
         );
+        if (changedState.length > 0) {
+            changedState.forEach((key: string) => {
+                propsObj[key] = nextProps[key];
+            });
+            this.setState({
+                ...propsObj
+            });
+        }
     };
-    jsonStringDiff = (obj1: Object = {}, obj2: Object = {}) => {
+    jsonStringDiff = (obj1: object | string, obj2: object | string) => {
         return JSON.stringify(obj1) !== JSON.stringify(obj2);
     };
     componentWillReceiveProps(nextProps: EasyfaProps) {
@@ -230,8 +241,10 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             ? nextSrc.join('')
             : nextSrc;
         const parseStateSrc = this.state.src.join('');
-        if (parseStateSrc !== parsePropsSrc || this.checkDiff(nextProps)) {
+        if (parseStateSrc !== parsePropsSrc) {
             this.reset(nextProps);
+        } else {
+            this.checkDiff(nextProps);
         }
     }
     componentWillUnmount() {
