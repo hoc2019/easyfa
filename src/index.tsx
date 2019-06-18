@@ -20,6 +20,7 @@ interface EasyfaProps {
     src: string[];
     rate?: number;
     autoPlay?: boolean;
+    autoPlayTimes?: number;
     style?: {};
     className?: '';
     canvasClassName?: '';
@@ -149,7 +150,13 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         this.player.end();
     };
     getImgData = () => {
-        const { onLoad, onLoopStart, onLoopEnd, onEnd } = this.props;
+        const {
+            onLoad,
+            onLoopStart,
+            onLoopEnd,
+            onEnd,
+            autoPlayTimes
+        } = this.props;
         const { rate, src, autoPlay, showLayer } = this.state;
         const p = src.map(async (item, index) => {
             const data = await getImgBuffer(item);
@@ -184,7 +191,11 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
             this.playerList[index] = p;
             this.playerList[index].playbackRate = rate;
             if (autoPlay && index === showLayer) {
-                this.playerList[index].play();
+                if (autoPlayTimes > 0) {
+                    this.playerList[index].play(autoPlayTimes);
+                } else {
+                    this.playerList[index].play();
+                }
             }
             this.playerList[index].on('play', () => {
                 this.isPlay = true;
