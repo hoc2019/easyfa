@@ -21,7 +21,7 @@ interface EasyfaProps {
   rate?: number;
   autoPlay?: boolean;
   autoPlayTimes?: number;
-  showStatic?: number;
+  showStatic?: number[] | number;
   style?: object;
   className?: string;
   canvasClassName?: string;
@@ -38,7 +38,7 @@ interface EasyfaState {
   autoPlay: boolean;
   style?: object;
   className?: string;
-  staticImg?: string;
+  staticImg?: string[];
   staticStyle?: object;
   canvasClassName?: string;
   canvasStyle?: object;
@@ -74,6 +74,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       showStatic
     } = props;
     const srcList = typeof src === "string" ? [src] : src;
+    const showStaticList =
+      typeof showStatic === "number" ? [showStatic] : showStatic;
     this.state = {
       src: srcList,
       rate,
@@ -82,13 +84,14 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       className,
       canvasStyle,
       canvasClassName,
-      staticImg: "",
+      staticImg: [],
       staticStyle: {},
       showLayer: 0,
-      loadDone: false
+      loadDone: false,
+      showStatic: showStaticList
     };
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
-    this.isStatic = typeof showStatic === "number";
+    this.isStatic = Array.isArray(showStaticList);
   }
   componentDidMount() {
     this.getImgData();
@@ -128,12 +131,19 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     );
   };
   changeLayer = (layerIndex: number) => {
-    if (!this.canvasList[layerIndex]) return;
-    this.stop();
-    this.setState({
-      showLayer: layerIndex
-    });
-    this.player = this.playerList[layerIndex];
+    if (this.isStatic) {
+      const { staticImg } = this.state;
+      staticImg[layerIndex] &&
+        this.setState({
+          showLayer: layerIndex
+        });
+    } else if (this.canvasList[layerIndex]) {
+      this.stop();
+      this.player = this.playerList[layerIndex];
+      this.setState({
+        showLayer: layerIndex
+      });
+    }
   };
   play = (round?: number) => {
     if (!this.player) return;
@@ -158,98 +168,105 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     this.player.end();
   };
   getImgData = () => {
-    const {
-      onLoad,
-      onLoopStart,
-      onLoopEnd,
-      onEnd,
-      autoPlayTimes,
-      showStatic
-    } = this.props;
-    const { rate, src, autoPlay, showLayer } = this.state;
-    const p = src.map(async (item, index) => {
-      const data = await getImgBuffer(item);
-      const apngItem = (this.apngList[index] = parseAPNG(data));
-      const canvasItem = this.canvasList[index];
-      //错误检测
-      //图片格式不支持(非png)
-      if (apngItem instanceof Error) {
-        console.log("目前不支持其他类型图片");
-        return;
-      }
-      //非动图apng
-      if ((apngItem as ErrNotAPNG).error instanceof Error) {
-        const { apngInfo } = apngItem as ErrNotAPNG;
-        canvasItem.width = apngInfo.width;
-        canvasItem.height = apngInfo.height;
-        const ctx = canvasItem.getContext("2d");
-        const imgElement = document.createElement("img");
-        imgElement.src = item;
-        imgElement.onload = function() {
-          ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);
-          ctx.drawImage(imgElement, 0, 0);
-        };
-        return;
-      }
-      if (this.isStatic) {
+    const { onLoad, onLoopStart, onLoopEnd, onEnd, autoPlayTimes } = this.props;
+    const { rate, src, autoPlay, showLayer, showStatic } = this.state;
+    //纯静态img模式
+    if (this.isStatic) {
+      const staticImgList: string[] = [];
+      const p = src.map(async (item, index) => {
+        const data = await getImgBuffer(item);
+        const apngItem = (this.apngList[index] = parseAPNG(data));
+        if (
+          apngItem instanceof Error ||
+          (apngItem as ErrNotAPNG).error instanceof Error
+        ) {
+          return (staticImgList[index] = item);
+        }
         const frames = (apngItem as APNG).frames;
+        const sIndex = showStatic[index] || showStatic[0];
+        console.log(sIndex);
         let startIndex =
-          Math.abs(showStatic) >= frames.length
+          Math.abs(sIndex) >= frames.length
             ? 0
-            : showStatic >= 0
-            ? showStatic
-            : frames.length + showStatic;
+            : sIndex >= 0
+            ? sIndex
+            : frames.length + sIndex;
         const showImg = frames.slice(startIndex, startIndex + 1)[0];
         const staticImg = URL.createObjectURL(showImg.imageData);
-        const staticStyle = {
-          //   width: (apngItem as APNG).width,
-          //   height: (apngItem as APNG).height,
-          //   background: `url(${staticImg}) no-repeat`,
-          //   backgroundSize: `${showImg.width}px ${showImg.height}px`,
-          //   backgroundPosition: `${showImg.left}px ${showImg.top}px`
-        };
+        return (staticImgList[index] = staticImg);
+      });
+      Promise.all(p).then(() => {
         this.setState({
-          staticImg,
-          staticStyle
+          staticImg: staticImgList,
+          loadDone: true
         });
-        return;
-      }
-      //创建canvas播放器
-      canvasItem.width = (apngItem as APNG).width;
-      canvasItem.height = (apngItem as APNG).height;
-      const p = await (apngItem as APNG).getPlayer(canvasItem.getContext("2d"));
-      this.playerList[index] = p;
-      this.playerList[index].playbackRate = rate;
-      if (autoPlay && index === showLayer) {
-        if (autoPlayTimes > 0) {
-          this.playerList[index].play(autoPlayTimes);
-        } else {
-          this.playerList[index].play();
+        onLoad && onLoad();
+      });
+    } else {
+      //动静混合canvas模式
+      const p = src.map(async (item, index) => {
+        const data = await getImgBuffer(item);
+        const apngItem = (this.apngList[index] = parseAPNG(data));
+        const canvasItem = this.canvasList[index];
+        //错误检测
+        //图片格式不支持(非png)
+        if (apngItem instanceof Error) {
+          console.log("目前不支持其他类型图片");
+          return;
         }
-      }
-      this.playerList[index].on("play", () => {
-        this.isPlay = true;
+        //非动图apng
+        if ((apngItem as ErrNotAPNG).error instanceof Error) {
+          const { apngInfo } = apngItem as ErrNotAPNG;
+          canvasItem.width = apngInfo.width;
+          canvasItem.height = apngInfo.height;
+          const ctx = canvasItem.getContext("2d");
+          const imgElement = document.createElement("img");
+          imgElement.src = item;
+          imgElement.onload = function() {
+            ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);
+            ctx.drawImage(imgElement, 0, 0);
+          };
+          return;
+        }
+        //创建canvas播放器
+        canvasItem.width = (apngItem as APNG).width;
+        canvasItem.height = (apngItem as APNG).height;
+        const p = await (apngItem as APNG).getPlayer(
+          canvasItem.getContext("2d")
+        );
+        this.playerList[index] = p;
+        this.playerList[index].playbackRate = rate;
+        if (autoPlay && index === showLayer) {
+          if (autoPlayTimes > 0) {
+            this.playerList[index].play(autoPlayTimes);
+          } else {
+            this.playerList[index].play();
+          }
+        }
+        this.playerList[index].on("play", () => {
+          this.isPlay = true;
+        });
+        this.playerList[index].on("stop", () => {
+          this.isPlay = false;
+        });
+        this.playerList[index].on("loopStart", () => {
+          onLoopStart && onLoopStart();
+        });
+        this.playerList[index].on("loopEnd", () => {
+          onLoopEnd && onLoopEnd();
+        });
+        this.playerList[index].on("end", () => {
+          onEnd && onEnd();
+        });
       });
-      this.playerList[index].on("stop", () => {
-        this.isPlay = false;
+      Promise.all(p).then(() => {
+        this.setState({
+          loadDone: true
+        });
+        this.player = this.playerList[showLayer];
+        onLoad && onLoad();
       });
-      this.playerList[index].on("loopStart", () => {
-        onLoopStart && onLoopStart();
-      });
-      this.playerList[index].on("loopEnd", () => {
-        onLoopEnd && onLoopEnd();
-      });
-      this.playerList[index].on("end", () => {
-        onEnd && onEnd();
-      });
-    });
-    Promise.all(p).then(() => {
-      this.setState({
-        loadDone: true
-      });
-      this.player = this.playerList[showLayer];
-      onLoad && onLoad();
-    });
+    }
   };
   checkDiff = (nextProps: EasyfaProps) => {
     const propsObj: PropsObj = {};
@@ -300,24 +317,27 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     } = this.state;
     return (
       <div className={`easyfa-canvas-box ${className}`} style={style}>
-        {this.isStatic && staticImg ? (
-          <img
-            src={staticImg}
-            className={`${canvasClassName} easyfa-img`}
-            style={{ ...staticStyle, ...canvasStyle }}
-          />
-        ) : (
-          src.map((item, index) => (
-            <canvas
-              key={index}
-              ref={dom => (this.canvasList[index] = dom)}
-              style={canvasStyle}
-              className={`${canvasClassName} ${
-                index === showLayer && loadDone ? "easyfa-canvas-show" : ""
-              } easyfa-canvas`}
-            />
-          ))
-        )}
+        {this.isStatic && staticImg.length > 0
+          ? staticImg.map((item, index) => (
+              <img
+                key={index}
+                src={item}
+                className={`${canvasClassName} ${
+                  index === showLayer && loadDone ? "easyfa-img-show" : ""
+                } easyfa-img`}
+                style={{ ...staticStyle, ...canvasStyle }}
+              />
+            ))
+          : src.map((item, index) => (
+              <canvas
+                key={index}
+                ref={dom => (this.canvasList[index] = dom)}
+                style={canvasStyle}
+                className={`${canvasClassName} ${
+                  index === showLayer && loadDone ? "easyfa-canvas-show" : ""
+                } easyfa-canvas`}
+              />
+            ))}
       </div>
     );
   }
