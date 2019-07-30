@@ -184,7 +184,6 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         }
         const frames = (apngItem as APNG).frames;
         const sIndex = showStatic[index] || showStatic[0];
-        console.log(sIndex);
         let startIndex =
           Math.abs(sIndex) >= frames.length
             ? 0
