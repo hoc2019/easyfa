@@ -61,6 +61,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
   isStatic: boolean;
   hasPerformance: boolean = typeof performance !== "undefined";
   speed: number = 1000 / 24;
+  isUnmount: boolean;
   constructor(props: EasyfaProps) {
     super(props);
     const {
@@ -92,6 +93,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     };
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     this.isStatic = Array.isArray(showStaticList);
+    this.isUnmount = false;
   }
   componentDidMount() {
     this.getImgData();
@@ -195,6 +197,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         return (staticImgList[index] = staticImg);
       });
       Promise.all(p).then(() => {
+        if (this.isUnmount) return;
         this.setState({
           staticImg: staticImgList,
           loadDone: true
@@ -259,6 +262,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         });
       });
       Promise.all(p).then(() => {
+        if (this.isUnmount) return;
         this.setState({
           loadDone: true
         });
@@ -297,6 +301,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     }
   }
   componentWillUnmount() {
+    this.isUnmount = true;
     if (this.player) {
       this.player.stop();
       this.player._apng = null;
