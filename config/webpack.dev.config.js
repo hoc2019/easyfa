@@ -46,6 +46,7 @@ module.exports = {
     // dependencies, which allows browsers to cache those libraries between builds.
     devServer: {
         open: true,
+        host: "0.0.0.0",
         openPage: '/example'
     }
 };
