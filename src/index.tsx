@@ -223,6 +223,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
           canvasItem.height = apngInfo.height;
           const ctx = canvasItem.getContext("2d");
           const imgElement = document.createElement("img");
+          imgElement.crossOrigin = 'anonymous';
           imgElement.src = item;
           imgElement.onload = function() {
             ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);
