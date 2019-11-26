@@ -9,11 +9,9 @@ export function getImgBuffer(
 ): Promise<ArrayBuffer> {
   if (cache && !window.apngCache) {
     window.apngCache = {};
-    console.log("开启缓存模式");
   }
   return new Promise((resolve, reject) => {
     if (cache && window.apngCache && window.apngCache[url]) {
-      console.log(`使用${url}缓存`);
       resolve(window.apngCache[url]);
     } else {
       const xhr = new XMLHttpRequest();
