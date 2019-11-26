@@ -20,6 +20,7 @@ interface EasyfaProps {
   src: string[];
   rate?: number;
   autoPlay?: boolean;
+  cache?: boolean;
   autoPlayTimes?: number;
   showStatic?: number[] | number;
   style?: object;
@@ -170,13 +171,20 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     this.player.end();
   };
   getImgData = () => {
-    const { onLoad, onLoopStart, onLoopEnd, onEnd, autoPlayTimes } = this.props;
+    const {
+      onLoad,
+      onLoopStart,
+      onLoopEnd,
+      onEnd,
+      autoPlayTimes,
+      cache = false
+    } = this.props;
     const { rate, src, autoPlay, showLayer, showStatic } = this.state;
     //纯静态img模式
     if (this.isStatic) {
       const staticImgList: string[] = [];
       const p = src.map(async (item, index) => {
-        const data = await getImgBuffer(item);
+        const data = await getImgBuffer(item, cache);
         const apngItem = (this.apngList[index] = parseAPNG(data));
         if (
           apngItem instanceof Error ||
@@ -207,7 +215,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     } else {
       //动静混合canvas模式
       const p = src.map(async (item, index) => {
-        const data = await getImgBuffer(item);
+        const data = await getImgBuffer(item, cache);
         const apngItem = (this.apngList[index] = parseAPNG(data));
         const canvasItem = this.canvasList[index];
         //错误检测
@@ -223,7 +231,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
           canvasItem.height = apngInfo.height;
           const ctx = canvasItem.getContext("2d");
           const imgElement = document.createElement("img");
-          imgElement.crossOrigin = 'anonymous';
+          imgElement.crossOrigin = "anonymous";
           imgElement.src = item;
           imgElement.onload = function() {
             ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);

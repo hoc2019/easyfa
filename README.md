@@ -50,6 +50,7 @@ class App extends Component {
 | `className`       | 外层盒子样式类名                                                                                                                                             | `string`       |
 | `canvasClassName` | 内层canvas样式类名                                                                                                                                           | `string`       |
 | `autoPlay`        | 图片加载后是否自动播放（循环播放），默认false                                                                                                                | `boolean`      |
+| `cache`           | 根据图片地址缓存到window.apngCache下，不重复再重复请求图片，默认false                                                                                        | `boolean`      |
 | `autoPlayTimes`   | 自动播放次数，不传为循环播放                                                                                                                                 | `number`       |
 
 > PS.改变src会解析加载动图并刷新，此方法切换图片会出现闪烁，可通过src传入数组，并通changeLayer方法切换指定图层来实现。
