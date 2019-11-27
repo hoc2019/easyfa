@@ -95,6 +95,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     this.isStatic = Array.isArray(showStaticList);
     this.isUnmount = false;
+    if (!window.apngCache) {
+      window.apngCache = {};
+    }
   }
   componentDidMount() {
     this.getImgData();
@@ -184,8 +187,14 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     if (this.isStatic) {
       const staticImgList: string[] = [];
       const p = src.map(async (item, index) => {
-        const data = await getImgBuffer(item, cache);
-        const apngItem = (this.apngList[index] = parseAPNG(data));
+        let apngItem = null;
+        if (cache && window.apngCache[item]) {
+          apngItem = window.apngCache[item];
+        } else {
+          const data = await getImgBuffer(item);
+          apngItem = this.apngList[index] = parseAPNG(data);
+          window.apngCache[item] = apngItem;
+        }
         if (
           apngItem instanceof Error ||
           (apngItem as ErrNotAPNG).error instanceof Error
@@ -215,8 +224,14 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     } else {
       //动静混合canvas模式
       const p = src.map(async (item, index) => {
-        const data = await getImgBuffer(item, cache);
-        const apngItem = (this.apngList[index] = parseAPNG(data));
+        let apngItem = null;
+        if (cache && window.apngCache[item]) {
+          apngItem = window.apngCache[item];
+        } else {
+          const data = await getImgBuffer(item);
+          apngItem = this.apngList[index] = parseAPNG(data);
+          window.apngCache[item] = apngItem;
+        }
         const canvasItem = this.canvasList[index];
         //错误检测
         //图片格式不支持(非png)
