@@ -21,6 +21,7 @@ interface EasyfaProps {
   rate?: number;
   autoPlay?: boolean;
   cache?: boolean;
+  trans?: boolean;
   autoPlayTimes?: number;
   showStatic?: number[] | number;
   style?: object;
@@ -60,6 +61,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
   playerList: Player[] = [];
   isPlay: boolean = false;
   isStatic: boolean;
+  trans: boolean;
   hasPerformance: boolean = typeof performance !== "undefined";
   speed: number = 1000 / 24;
   isUnmount: boolean;
@@ -70,6 +72,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       rate = 1.0,
       autoPlay = false,
       style = {},
+      trans = false,
       className = "",
       canvasStyle = {},
       canvasClassName = "",
@@ -98,6 +101,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     if (!window.apngCache) {
       window.apngCache = {};
     }
+    this.trans = !!trans;
   }
   componentDidMount() {
     this.getImgData();
@@ -351,8 +355,10 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                 key={index}
                 src={item}
                 className={`${canvasClassName} ${
-                  index === showLayer && loadDone ? "easyfa-img-show" : ""
-                } easyfa-img`}
+                  index === showLayer && loadDone
+                    ? `easyfa-img-show${this.trans ? "-t" : ""}`
+                    : ""
+                } easyfa-img${this.trans ? "-t" : ""}`}
                 style={{ ...staticStyle, ...canvasStyle }}
               />
             ))
@@ -362,8 +368,10 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
                 ref={dom => (this.canvasList[index] = dom)}
                 style={canvasStyle}
                 className={`${canvasClassName} ${
-                  index === showLayer && loadDone ? "easyfa-canvas-show" : ""
-                } easyfa-canvas`}
+                  index === showLayer && loadDone
+                    ? `easyfa-canvas-show${this.trans ? "-t" : ""}`
+                    : ""
+                } easyfa-canvas${this.trans ? "-t" : ""}`}
               />
             ))}
       </div>

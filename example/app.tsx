@@ -7,7 +7,7 @@ import apngPic1 from "./apic1.png";
 // import png from "./png.png";
 import koala from "./koala.png";
 
-const imgList = [[koala], [apngPic1]];
+const imgList = [[koala, apngPic1], [apngPic1]];
 
 interface AppState {
   layerIndex: 0;
@@ -99,13 +99,14 @@ class App extends React.Component {
             ref={(com: Easyfa) => (this.apngcom = com)}
             src={imgList[showIndex]}
             rate={1}
+            trans
             onLoad={this.handleLoad}
             onEnd={this.handleEnd}
             onLoopStart={this.handleLoopStart}
             onLoopEnd={this.handleLoopEnd}
             autoPlay={true}
           />
-          <div className="btn-box" style={{ marginTop: "100px " }}>
+          <div className="btn-box" style={{ marginTop: "0px " }}>
             <button onClick={this.apngPlay}>循环播放</button>
             <button onClick={this.apngPlayOne}>播放一次</button>
             <button onClick={this.apngPause}>暂停</button>
