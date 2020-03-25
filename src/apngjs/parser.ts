@@ -4,6 +4,7 @@ import { APNG, Frame } from "./structs";
 declare global {
   interface Window {
     apngCache: any;
+    apngDataCache: any;
   }
 }
 
@@ -166,7 +167,7 @@ export default function parseAPNG(
     delete frame.dataParts;
     bb = null;
   });
-
+  console.log("apng", apng);
   return apng;
 }
 

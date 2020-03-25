@@ -18,6 +18,7 @@ import "./style.css";
 
 interface EasyfaProps {
   src: string[];
+  flags?: string[];
   rate?: number;
   autoPlay?: boolean;
   cache?: boolean;
@@ -65,6 +66,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
   hasPerformance: boolean = typeof performance !== "undefined";
   speed: number = 1000 / 24;
   isUnmount: boolean;
+  flags: string[];
   constructor(props: EasyfaProps) {
     super(props);
     const {
@@ -76,7 +78,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       className = "",
       canvasStyle = {},
       canvasClassName = "",
-      showStatic
+      showStatic,
+      flags
     } = props;
     const srcList = typeof src === "string" ? [src] : src;
     const showStaticList =
@@ -98,8 +101,12 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     this.isStatic = Array.isArray(showStaticList);
     this.isUnmount = false;
+    this.flags = flags;
     if (!window.apngCache) {
       window.apngCache = {};
+    }
+    if (!window.apngDataCache) {
+      window.apngDataCache = {};
     }
     this.trans = !!trans;
   }
@@ -177,7 +184,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     if (!this.player) return;
     this.player.end();
   };
-  getImgData = () => {
+  getImgData = async () => {
     const {
       onLoad,
       onLoopStart,
@@ -225,6 +232,12 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         });
         onLoad && onLoad();
       });
+    } else if (this.flags) {
+      console.log("1", this.flags);
+      const bufferList = await Promise.all(
+        src.map(async (item, index) => await getImgBuffer(item))
+      );
+      console.log(bufferList);
     } else {
       //动静混合canvas模式
       const p = src.map(async (item, index) => {

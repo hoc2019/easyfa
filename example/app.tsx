@@ -98,6 +98,7 @@ class App extends React.Component {
             }}
             ref={(com: Easyfa) => (this.apngcom = com)}
             src={imgList[showIndex]}
+            // flags={["aaa", "bbb"]}
             rate={1}
             trans
             onLoad={this.handleLoad}
