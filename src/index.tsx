@@ -18,7 +18,7 @@ import "./style.css";
 
 interface EasyfaProps {
   src: string[];
-  flags?: string[];
+  json?: object;
   rate?: number;
   autoPlay?: boolean;
   cache?: boolean;
@@ -66,7 +66,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
   hasPerformance: boolean = typeof performance !== "undefined";
   speed: number = 1000 / 24;
   isUnmount: boolean;
-  flags: string[];
+  json: object;
   constructor(props: EasyfaProps) {
     super(props);
     const {
@@ -79,7 +79,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       canvasStyle = {},
       canvasClassName = "",
       showStatic,
-      flags
+      json
     } = props;
     const srcList = typeof src === "string" ? [src] : src;
     const showStaticList =
@@ -101,7 +101,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     this.isStatic = Array.isArray(showStaticList);
     this.isUnmount = false;
-    this.flags = flags;
+    this.json = json;
     if (!window.apngCache) {
       window.apngCache = {};
     }
@@ -162,9 +162,10 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       });
     }
   };
-  play = (round?: number) => {
+  play = (round: number, flags?: string | string[]) => {
     if (!this.player) return;
-    this.player.play(round);
+    const flagsArr: string[] = typeof flags === "string" ? [flags] : flags;
+    this.player.play(round, flagsArr);
     this.isPlay = true;
   };
   one = () => {
@@ -232,12 +233,6 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         });
         onLoad && onLoad();
       });
-    } else if (this.flags) {
-      console.log("1", this.flags);
-      const bufferList = await Promise.all(
-        src.map(async (item, index) => await getImgBuffer(item))
-      );
-      console.log(bufferList);
     } else {
       //动静混合canvas模式
       const p = src.map(async (item, index) => {
@@ -275,7 +270,9 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         canvasItem.width = (apngItem as APNG).width;
         canvasItem.height = (apngItem as APNG).height;
         const p = await (apngItem as APNG).getPlayer(
-          canvasItem.getContext("2d")
+          canvasItem.getContext("2d"),
+          false,
+          this.json
         );
         this.playerList[index] = p;
         this.playerList[index].playbackRate = rate;

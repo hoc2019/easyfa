@@ -1,0 +1,9 @@
+{
+  "waiting": [1, 20],
+  "attack": [21, 46],
+  "draw transition": [47, 59],
+  "draw": [60, 74],
+  "lose": [75, 95],
+  "win transition": [96, 105],
+  "win": [106, 124]
+}

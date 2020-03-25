@@ -5,9 +5,12 @@ import Easyfa from "../src/index";
 import apngPic1 from "./apic1.png";
 // // import apngPic2 from './apic2.png';
 // import png from "./png.png";
-import koala from "./koala.png";
+// import koala from "./koala.png";
 
-const imgList = [[koala, apngPic1], [apngPic1]];
+import people from "./people.png";
+import json from "./people.json";
+
+const imgList = [[people], [apngPic1]];
 
 interface AppState {
   layerIndex: 0;
@@ -15,6 +18,14 @@ interface AppState {
   showIndex: number;
   roundNum: number;
 }
+
+// waiting: (2) [1, 20]
+// attack: (2) [21, 46]
+// draw transition: (2) [47, 59]
+// draw: (2) [60, 74]
+// lose: (2) [75, 95]
+// win transition: (2) [96, 105]
+// win: (2) [106, 124]
 
 class App extends React.Component {
   apngcom: Easyfa = null;
@@ -25,7 +36,8 @@ class App extends React.Component {
     roundNum: 1
   };
   apngPlay = () => {
-    this.apngcom.play();
+    // this.apngcom.play(1);
+    this.apngcom.play(1, "win");
   };
   apngRoundPlay = () => {
     const { roundNum } = this.state;
@@ -92,12 +104,13 @@ class App extends React.Component {
           <Easyfa
             style={{
               top: "50px",
-              position: "absolute",
-              width: "200px",
-              height: "200px"
+              position: "absolute"
+              // width: "200px",
+              // height: "200px"
             }}
             ref={(com: Easyfa) => (this.apngcom = com)}
             src={imgList[showIndex]}
+            json={json}
             // flags={["aaa", "bbb"]}
             rate={1}
             trans
@@ -105,7 +118,7 @@ class App extends React.Component {
             onEnd={this.handleEnd}
             onLoopStart={this.handleLoopStart}
             onLoopEnd={this.handleLoopEnd}
-            autoPlay={true}
+            // autoPlay={true}
           />
           <div className="btn-box" style={{ marginTop: "0px " }}>
             <button onClick={this.apngPlay}>循环播放</button>
