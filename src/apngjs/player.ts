@@ -73,6 +73,8 @@ export default class extends EventEmitter {
         this._numPlays++;
         if (this._numPlays === this._playRound) {
           this._ended = true;
+          this.stop();
+          return;
         }
       }
     }
@@ -109,7 +111,7 @@ export default class extends EventEmitter {
       );
     }
     if (frame.blendOp == 0) {
-      this.context.clearRect(frame.left, frame.top, frame.width, frame.height);
+      this.context.clearRect(0, 0, this._apng.width, this._apng.height);
     }
 
     this.context.drawImage(frame.imageElement, frame.left, frame.top);
@@ -135,7 +137,6 @@ export default class extends EventEmitter {
   }
 
   playFrame(round = Infinity, flags?: string[]) {
-    console.log(flags);
     if (!this._paused) return;
     if (round !== this._playRound || this._ended) {
       this.stop();

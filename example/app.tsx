@@ -26,6 +26,15 @@ interface AppState {
 // lose: (2) [75, 95]
 // win transition: (2) [96, 105]
 // win: (2) [106, 124]
+const flagList: string[] = [
+  "waiting",
+  "attack",
+  "draw transition",
+  "draw",
+  "lose",
+  "win transition",
+  "win"
+];
 
 class App extends React.Component {
   apngcom: Easyfa = null;
@@ -36,8 +45,10 @@ class App extends React.Component {
     roundNum: 1
   };
   apngPlay = () => {
-    // this.apngcom.play(1);
-    this.apngcom.play(1, "win");
+    this.apngcom.play();
+  };
+  playFlag = (flag: string) => {
+    this.apngcom.play(1, flag);
   };
   apngRoundPlay = () => {
     const { roundNum } = this.state;
@@ -138,6 +149,17 @@ class App extends React.Component {
               onChange={this.handleChangeRoundNum}
               value={roundNum}
             />
+            <div>
+              {flagList.map(item => (
+                <button
+                  onClick={() => {
+                    this.playFlag(item);
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

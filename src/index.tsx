@@ -162,7 +162,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       });
     }
   };
-  play = (round: number, flags?: string | string[]) => {
+  play = (round?: number, flags?: string | string[]) => {
     if (!this.player) return;
     const flagsArr: string[] = typeof flags === "string" ? [flags] : flags;
     this.player.play(round, flagsArr);
