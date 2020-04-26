@@ -6,6 +6,7 @@
         "noUnusedLocals": true,
         "esModuleInterop": true,
         "jsx": "react",
+        "resolveJsonModule": true,
         "moduleResolution": "node",
         "lib": ["dom", "esnext"]
     },

@@ -7,6 +7,9 @@ import apngPic1 from "./apic1.png";
 // import png from "./png.png";
 import koala from "./koala.png";
 
+import queueApng from "./people.png";
+import queueData from "./people.json";
+
 const imgList = [[koala, apngPic1], [apngPic1]];
 
 interface AppState {
@@ -92,6 +95,21 @@ class App extends React.Component {
           <Easyfa
             style={{
               top: "50px",
+              position: "absolute"
+            }}
+            ref={(com: Easyfa) => (this.apngcom = com)}
+            queue={queueApng}
+            queueData={queueData}
+            // src={imgList[showIndex]}
+            // flags={["aaa", "bbb"]}
+            onLoad={this.handleLoad}
+            onEnd={this.handleEnd}
+            onLoopStart={this.handleLoopStart}
+            onLoopEnd={this.handleLoopEnd}
+          />
+          {/* <Easyfa
+            style={{
+              top: "50px",
               position: "absolute",
               width: "200px",
               height: "200px"
@@ -106,7 +124,7 @@ class App extends React.Component {
             onLoopStart={this.handleLoopStart}
             onLoopEnd={this.handleLoopEnd}
             autoPlay={true}
-          />
+          /> */}
           <div className="btn-box" style={{ marginTop: "0px " }}>
             <button onClick={this.apngPlay}>循环播放</button>
             <button onClick={this.apngPlayOne}>播放一次</button>
