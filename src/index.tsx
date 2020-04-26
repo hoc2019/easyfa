@@ -76,7 +76,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       className = "",
       canvasStyle = {},
       canvasClassName = "",
-      showStatic
+      showStatic,
     } = props;
     const srcList = typeof src === "string" ? [src] : src;
     const showStaticList =
@@ -93,7 +93,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       staticStyle: {},
       showLayer: 0,
       loadDone: false,
-      showStatic: showStaticList
+      showStatic: showStaticList,
     };
     this.speed = 1000 / (rate * 24); //1000/24 每秒24帧
     this.isStatic = Array.isArray(showStaticList);
@@ -114,7 +114,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       style = {},
       className = "",
       canvasStyle = {},
-      canvasClassName = ""
+      canvasClassName = "",
     } = nextProps;
     const srcList = typeof src === "string" ? [src] : src;
     this.stop();
@@ -133,7 +133,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         canvasStyle,
         canvasClassName,
         loadDone: false,
-        showLayer: 0
+        showLayer: 0,
       },
       () => {
         this.getImgData();
@@ -145,13 +145,13 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       const { staticImg } = this.state;
       staticImg[layerIndex] &&
         this.setState({
-          showLayer: layerIndex
+          showLayer: layerIndex,
         });
     } else if (this.canvasList[layerIndex]) {
       this.stop();
       this.player = this.playerList[layerIndex];
       this.setState({
-        showLayer: layerIndex
+        showLayer: layerIndex,
       });
     }
   };
@@ -184,7 +184,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       onLoopEnd,
       onEnd,
       autoPlayTimes,
-      cache = false
+      cache = false,
     } = this.props;
     const { rate, src, autoPlay, showLayer, showStatic } = this.state;
     //纯静态img模式
@@ -221,7 +221,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         if (this.isUnmount) return;
         this.setState({
           staticImg: staticImgList,
-          loadDone: true
+          loadDone: true,
         });
         onLoad && onLoad();
       });
@@ -237,6 +237,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
           window.apngCache[item] = apngItem;
         }
         const canvasItem = this.canvasList[index];
+        // 组件已注销找不到canvas
+        if (!canvasItem) return;
         //错误检测
         //图片格式不支持(非png)
         if (apngItem instanceof Error) {
@@ -252,7 +254,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
           const imgElement = document.createElement("img");
           imgElement.crossOrigin = "anonymous";
           imgElement.src = item;
-          imgElement.onload = function() {
+          imgElement.onload = function () {
             ctx.clearRect(0, 0, canvasItem.width, canvasItem.height);
             ctx.drawImage(imgElement, 0, 0);
           };
@@ -264,6 +266,8 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         const p = await (apngItem as APNG).getPlayer(
           canvasItem.getContext("2d")
         );
+        // 组件已注销找不到canvas
+        if (!canvasItem) return;
         this.playerList[index] = p;
         this.playerList[index].playbackRate = rate;
         if (autoPlay && index === showLayer) {
@@ -292,7 +296,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       Promise.all(p).then(() => {
         if (this.isUnmount) return;
         this.setState({
-          loadDone: true
+          loadDone: true,
         });
         this.player = this.playerList[showLayer];
         onLoad && onLoad();
@@ -311,7 +315,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
         propsObj[key] = nextProps[key];
       });
       this.setState({
-        ...propsObj
+        ...propsObj,
       });
     }
   };
@@ -345,7 +349,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
       showLayer,
       staticImg,
       staticStyle,
-      loadDone
+      loadDone,
     } = this.state;
     return (
       <div className={`easyfa-canvas-box ${className}`} style={style}>
@@ -365,7 +369,7 @@ class Easyfa extends React.Component<EasyfaProps, EasyfaState> {
           : src.map((item, index) => (
               <canvas
                 key={index}
-                ref={dom => (this.canvasList[index] = dom)}
+                ref={(dom) => (this.canvasList[index] = dom)}
                 style={canvasStyle}
                 className={`${canvasClassName} ${
                   index === showLayer && loadDone
